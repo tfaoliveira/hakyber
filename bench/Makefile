@@ -96,6 +96,58 @@ $(BIN)/test_libjade_ref: liblj_ref | $(BIN)
 $(BIN)/test_libjade_avx2: liblj_avx2 | $(BIN)
 	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/libjade/avx2/ -DJADE_NAMESPACE=JADE_KEM_KYBER_KYBER768_AMD64_AVX2 -DJADE_NAMESPACE_LC=jade_kem_kyber_kyber768_amd64_avx2 ./test/crypto_kem.c test/notrandombytes.c test/notrandombytes1.c ./src/libjade/avx2/libkyber768_avx2.a
 
+# --------------------------------------------------------------------
+# valgrind section
+
+MTARGETS ?= \
+$(BIN)/mem_pqclean_clean \
+$(BIN)/mem_pqclean_avx2 \
+$(BIN)/mem_jasmin_ref \
+$(BIN)/mem_jasmin_avx2 \
+$(BIN)/mem_jasmin_avx2v \
+$(BIN)/mem_crystals_ref \
+$(BIN)/mem_crystals_avx2 \
+$(BIN)/mem_libjade_ref \
+$(BIN)/mem_libjade_avx2
+
+$(BIN)/mem_pqclean_clean: libpq_clean | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/pqclean/clean/ -DJADE_NAMESPACE=PQCLEAN_KYBER768_CLEAN -DJADE_NAMESPACE_LC=PQCLEAN_KYBER768_CLEAN_crypto_kem ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/pqclean/clean/libkyber768_clean.a
+
+$(BIN)/mem_pqclean_avx2: libpq_avx2 | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/pqclean/avx2/ -DJADE_NAMESPACE=PQCLEAN_KYBER768_AVX2 -DJADE_NAMESPACE_LC=PQCLEAN_KYBER768_AVX2_crypto_kem ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/pqclean/avx2/libkyber768_avx2.a
+
+$(BIN)/mem_jasmin_ref: libj_ref | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/jasmin/ref/ -DJADE_NAMESPACE=JADE_KEM_KYBER_KYBER768_AMD64_REF -DJADE_NAMESPACE_LC=jade_kem_kyber_kyber768_amd64_ref ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/jasmin/ref/libkyber768_ref.a
+
+$(BIN)/mem_jasmin_avx2: libj_avx2 | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/jasmin/avx2/ -DJADE_NAMESPACE=JADE_KEM_KYBER_KYBER768_AMD64_AVX2 -DJADE_NAMESPACE_LC=jade_kem_kyber_kyber768_amd64_avx2 ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/jasmin/avx2/libkyber768_avx2.a
+
+$(BIN)/mem_jasmin_avx2v: libj_avx2v | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/jasmin/avx2v/ -DJADE_NAMESPACE=JADE_KEM_KYBER_KYBER768_AMD64_AVX2V -DJADE_NAMESPACE_LC=jade_kem_kyber_kyber768_amd64_avx2v ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/jasmin/avx2v/libkyber768_avx2v.a
+
+#--
+$(BIN)/mem_crystals_ref: libcry_ref | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/pq-crystals/ref/ -D__HAKYBER__ -DJADE_NAMESPACE=PQCRYSTALS_KYBER768_REF -DJADE_NAMESPACE_LC=pqcrystals_kyber768_ref ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/pq-crystals/ref/libpqcrystals_kyber768_ref.a
+
+$(BIN)/mem_crystals_avx2: libcry_avx2 | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/pq-crystals/avx2/ -D__HAKYBER__ -DJADE_NAMESPACE=PQCRYSTALS_KYBER768_AVX2 -DJADE_NAMESPACE_LC=pqcrystals_kyber768_avx2 ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/pq-crystals/avx2/libpqcrystals_kyber768_avx2.a
+
+# --
+$(BIN)/mem_libjade_ref: liblj_ref | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/libjade/ref/ -DJADE_NAMESPACE=JADE_KEM_KYBER_KYBER768_AMD64_REF -DJADE_NAMESPACE_LC=jade_kem_kyber_kyber768_amd64_ref ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/libjade/ref/libkyber768_ref.a
+
+$(BIN)/mem_libjade_avx2: liblj_avx2 | $(BIN)
+	$(CC) $(CFLAGS) -o $@ -I./test/ -I./src/libjade/avx2/ -DJADE_NAMESPACE=JADE_KEM_KYBER_KYBER768_AMD64_AVX2 -DJADE_NAMESPACE_LC=jade_kem_kyber_kyber768_amd64_avx2 ./test/crypto_kem_memory.c test/notrandombytes.c test/notrandombytes1.c ./src/libjade/avx2/libkyber768_avx2.a
+
+# --------------------------------------------------------------------
+
+MTARGETS_OUT = $(addsuffix .valgrind.out, $(MTARGETS))
+
+valgrind-all: $(MTARGETS)
+valgrind-out-all: $(MTARGETS_OUT)
+
+%.valgrind.out: %
+	(valgrind --leak-check=full --error-exitcode=1 --log-file=$@ ./$*) || mv $@ $@.error
 
 # --------------------------------------------------------------------
 

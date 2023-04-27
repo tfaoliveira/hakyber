@@ -1,1 +1,4 @@
-require "../../../../code/jasmin/ref/jkem.jazz"
+require "../../../../code/jasmin/ref/jkem_keypair.jazz"
+require "../../../../code/jasmin/ref/jkem_encaps.jazz"
+require "../../../../code/jasmin/ref/jkem_decaps.jazz"
+
