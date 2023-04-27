@@ -6,7 +6,7 @@ libkyber768_ref.a: jkem.s
 
 .PHONY: jkem.s
 jkem.s: jkem.jazz
-	jasminc -nowarning -lea $< -o $@
+	jasminc -nowarning $< -o $@
 
 clean:
 	rm -f *.o *.a
