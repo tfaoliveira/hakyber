@@ -145,9 +145,12 @@ MTARGETS_OUT = $(addsuffix .valgrind.out, $(MTARGETS))
 
 valgrind-all: $(MTARGETS)
 valgrind-out-all: $(MTARGETS_OUT)
+valgrind-clean:
+	rm -f *.error $(MTARGETS_OUT)
 
 %.valgrind.out: %
 	(valgrind --leak-check=full --error-exitcode=1 --log-file=$@ ./$*) || mv $@ $@.error
+
 
 # --------------------------------------------------------------------
 
